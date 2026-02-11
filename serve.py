@@ -1,0 +1,69 @@
+#!/usr/bin/env python3
+"""
+🔥 Digiclaw Dashboard Local Server
+Serves dashboard on local network for monitoring Digiclaw status
+"""
+
+import http.server
+import socketserver
+import socket
+import webbrowser
+from pathlib import Path
+import argparse
+
+def get_local_ip():
+    """Get the local IP address"""
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
+        s.close()
+        return ip
+    except Exception:
+        return "localhost"
+
+def start_server(port=8080, open_browser=False):
+    """Start the dashboard server"""
+    
+    # Change to dashboard directory
+    dashboard_dir = Path(__file__).parent
+    
+    class DigiclawHandler(http.server.SimpleHTTPRequestHandler):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, directory=str(dashboard_dir), **kwargs)
+        
+        def end_headers(self):
+            # Add headers for local network access
+            self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+            self.send_header('Pragma', 'no-cache')
+            self.send_header('Expires', '0')
+            super().end_headers()
+    
+    # Get local IP for network access
+    local_ip = get_local_ip()
+    
+    with socketserver.TCPServer(("", port), DigiclawHandler) as httpd:
+        print(f"🔥 Digiclaw Dashboard Server Starting...")
+        print(f"📍 Local access: http://localhost:{port}")
+        print(f"🌐 Network access: http://{local_ip}:{port}")
+        print(f"📱 Pi access: http://192.168.2.X:{port}")
+        print(f"🛑 Press Ctrl+C to stop")
+        print("-" * 50)
+        
+        if open_browser:
+            webbrowser.open(f"http://localhost:{port}")
+        
+        try:
+            httpd.serve_forever()
+        except KeyboardInterrupt:
+            print(f"\n🔥 Dashboard server stopped")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Digiclaw Dashboard Server")
+    parser.add_argument("--port", "-p", type=int, default=8080, 
+                       help="Port to serve on (default: 8080)")
+    parser.add_argument("--browser", "-b", action="store_true",
+                       help="Open browser automatically")
+    
+    args = parser.parse_args()
+    start_server(port=args.port, open_browser=args.browser)

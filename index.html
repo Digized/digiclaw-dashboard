@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Digiclaw Control Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="status-bar">
+            <div class="title">🔥 Digiclaw Control Dashboard</div>
+            <div class="status-indicators">
+                <span class="status online">ONLINE</span>
+                <span class="last-update">Last Update: <span id="last-update-time">--:--</span></span>
+                <span class="pi-status">Pi: digized-pi</span>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <section class="current-projects">
+                <h2>🎯 Current Projects</h2>
+                <div id="projects-list">
+                    <div class="project-card">
+                        <div class="project-title">Phase 1: Camera Mount</div>
+                        <div class="project-status">Ready for 3D Print</div>
+                        <div class="project-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 80%"></div>
+                            </div>
+                            <span class="progress-text">80%</span>
+                        </div>
+                    </div>
+                    <div class="project-card">
+                        <div class="project-title">Dashboard System</div>
+                        <div class="project-status">Building Now</div>
+                        <div class="project-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 30%"></div>
+                            </div>
+                            <span class="progress-text">30%</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="system-status">
+                <h2>📊 System Status</h2>
+                <div class="status-grid">
+                    <div class="status-item">
+                        <span class="status-label">Memory</span>
+                        <span class="status-value" id="memory-usage">368MB available</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Storage</span>
+                        <span class="status-value" id="storage-usage">3.7GB free</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Camera</span>
+                        <span class="status-value pointing-up">Pointing Up (Needs Fix)</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Nodes</span>
+                        <span class="status-value">digized-rig ONLINE</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="activity-feed">
+                <h2>⚡ Recent Activity</h2>
+                <div id="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-time">13:03</span>
+                        <span class="activity-text">Daily update completed (late)</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">18:54</span>
+                        <span class="activity-text">Loaded camera mount files to digized-rig</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">18:55</span>
+                        <span class="activity-text">Current view photo - still pointing at ceiling</span>
+                    </div>
+                    <div class="activity-item">
+                        <span class="activity-time">16:17</span>
+                        <span class="activity-text">Resource investigation: Normal system overhead</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="skills-arsenal">
+                <h2>🛠️ Skills Arsenal</h2>
+                <div class="skills-grid" id="skills-list">
+                    <span class="skill active">healthcheck</span>
+                    <span class="skill active">skill-creator</span>
+                    <span class="skill active">video-frames</span>
+                    <span class="skill active">weather</span>
+                </div>
+            </section>
+
+            <section class="next-actions">
+                <h2>🚀 Next Actions</h2>
+                <div id="next-actions-list">
+                    <div class="action-item priority-high">
+                        <span class="action-text">Build dashboard interface</span>
+                        <span class="action-status">IN PROGRESS</span>
+                    </div>
+                    <div class="action-item">
+                        <span class="action-text">Test cron system (1:30pm message)</span>
+                        <span class="action-status">SCHEDULED</span>
+                    </div>
+                    <div class="action-item">
+                        <span class="action-text">Implement camera angle fix</span>
+                        <span class="action-status">WAITING</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="daily-summary">
+                <h2>📋 Today's Summary</h2>
+                <div id="daily-summary-content">
+                    <p><strong>2026-02-11:</strong> Resource investigation complete. Camera mount design ready. Dashboard implementation started. Cron test scheduled.</p>
+                    <p><strong>Priorities:</strong> Physical capabilities (camera orientation), Infrastructure (dashboard), Testing (cron reliability)</p>
+                </div>
+            </section>
+        </main>
+
+        <footer class="dashboard-footer">
+            <span>Digiclaw v2026.2.3 • Running on Pi • Local Network Access</span>
+            <span id="update-indicator">●</span>
+        </footer>
+    </div>
+
+    <script src="dashboard.js"></script>
+</body>
+</html>
