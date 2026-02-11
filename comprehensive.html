@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔥 Digiclaw Comprehensive Status</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Fira Code', 'JetBrains Mono', 'Consolas', monospace;
+            background-color: #0a0a0a;
+            color: #00ff41;
+            line-height: 1.4;
+            font-size: 13px;
+        }
+
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #ff6600;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 15px;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .badge.online { background: #004400; color: #00ff41; }
+        .badge.warning { background: #443300; color: #ffaa00; }
+        .badge.error { background: #440000; color: #ff4444; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .wide-section {
+            grid-column: span 2;
+        }
+
+        .full-section {
+            grid-column: span 4;
+        }
+
+        .section {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 15px;
+            min-height: 200px;
+        }
+
+        .section-title {
+            color: #ff6600;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            border-bottom: 1px solid #333;
+            padding-bottom: 6px;
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .metric-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 8px;
+            background: #1a1a1a;
+            border-radius: 3px;
+            font-size: 12px;
+        }
+
+        .metric-label { color: #888; }
+        .metric-value { color: #00ff41; font-weight: bold; }
+
+        .progress-container {
+            margin: 8px 0;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 4px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #ffaa00);
+            transition: width 0.3s ease;
+        }
+
+        .list-item {
+            padding: 6px 0;
+            border-bottom: 1px solid #222;
+            font-size: 12px;
+        }
+
+        .list-item:last-child {
+            border-bottom: none;
+        }
+
+        .timestamp {
+            color: #666;
+            font-size: 11px;
+        }
+
+        .activity-item {
+            display: flex;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid #222;
+            font-size: 12px;
+        }
+
+        .activity-time {
+            color: #888;
+            min-width: 40px;
+        }
+
+        .activity-text {
+            color: #ccc;
+        }
+
+        .project-card {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 8px 0;
+        }
+
+        .project-name {
+            color: #00ff41;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .project-status {
+            color: #888;
+            font-size: 11px;
+            margin-bottom: 8px;
+        }
+
+        .autonomous-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 6px 8px;
+            background: #1a1a1a;
+            border-radius: 3px;
+            margin: 4px 0;
+            font-size: 12px;
+        }
+
+        .autonomous-action { color: #ccc; }
+        .autonomous-type { 
+            color: #ff6600; 
+            font-size: 10px;
+            text-transform: uppercase;
+            padding: 2px 6px;
+            border: 1px solid #ff6600;
+            border-radius: 2px;
+        }
+
+        .next-action {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: #1a1a1a;
+            border-radius: 3px;
+            margin: 4px 0;
+            font-size: 12px;
+        }
+
+        .priority-high { border-left: 3px solid #ff6600; }
+        .priority-medium { border-left: 3px solid #ffaa00; }
+        .priority-low { border-left: 3px solid #666; }
+
+        .memory-content {
+            background: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 3px;
+            padding: 8px;
+            font-size: 11px;
+            color: #ccc;
+            max-height: 120px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+
+        .update-indicator {
+            color: #00ff41;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .error { color: #ff4444; }
+        .warning { color: #ffaa00; }
+        .success { color: #00ff41; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a1a; }
+        ::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="title">🔥 Digiclaw Comprehensive Status</div>
+            <div class="status-badges">
+                <div class="badge online" id="system-status">ONLINE</div>
+                <div class="badge" id="activity-status">ACTIVE</div>
+                <div class="timestamp" id="last-update">Last Update: --:--</div>
+                <div class="update-indicator">●</div>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- System Metrics -->
+            <div class="section">
+                <div class="section-title">System Metrics</div>
+                <div class="metric-grid" id="system-metrics">
+                    <div class="metric-item">
+                        <span class="metric-label">Memory</span>
+                        <span class="metric-value" id="memory-usage">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Storage</span>
+                        <span class="metric-value" id="storage-usage">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">CPU</span>
+                        <span class="metric-value" id="cpu-usage">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Uptime</span>
+                        <span class="metric-value" id="uptime">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Current Activity -->
+            <div class="section">
+                <div class="section-title">Current Activity</div>
+                <div id="current-activity">
+                    <div class="list-item">
+                        <div>Status: <span id="activity-status-text">Loading...</span></div>
+                        <div class="timestamp" id="activity-timestamp">--:--</div>
+                    </div>
+                    <div class="list-item">
+                        <div>Processes: <span id="process-count">--</span></div>
+                    </div>
+                    <div class="list-item">
+                        <div>Dashboard: <span id="dashboard-status">--</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Node Status -->
+            <div class="section">
+                <div class="section-title">Connected Nodes</div>
+                <div id="node-status">
+                    <div class="metric-item">
+                        <span class="metric-label">digized-rig</span>
+                        <span class="metric-value" id="rig-status">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">digized-mbp</span>
+                        <span class="metric-value" id="mbp-status">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">iPhone</span>
+                        <span class="metric-value" id="iphone-status">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cron Status -->
+            <div class="section">
+                <div class="section-title">Cron Jobs</div>
+                <div id="cron-status">
+                    <div class="metric-item">
+                        <span class="metric-label">Active Jobs</span>
+                        <span class="metric-value" id="active-jobs">Loading...</span>
+                    </div>
+                    <div class="metric-item">
+                        <span class="metric-label">Next Daily</span>
+                        <span class="metric-value" id="next-daily">Loading...</span>
+                    </div>
+                    <div class="list-item">
+                        <div id="cron-status-text">Loading...</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Projects -->
+            <div class="section wide-section">
+                <div class="section-title">Active Projects</div>
+                <div id="projects-list">
+                    Loading projects...
+                </div>
+            </div>
+
+            <!-- Recent Conversations -->
+            <div class="section wide-section">
+                <div class="section-title">Recent Conversations</div>
+                <div id="recent-conversations">
+                    <div class="activity-item">
+                        <span class="activity-time">--:--</span>
+                        <span class="activity-text">Loading conversations...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Autonomous Work -->
+            <div class="section wide-section">
+                <div class="section-title">Autonomous Decisions</div>
+                <div id="autonomous-work">
+                    Loading autonomous work...
+                </div>
+            </div>
+
+            <!-- Next Actions -->
+            <div class="section wide-section">
+                <div class="section-title">Next Actions</div>
+                <div id="next-actions">
+                    Loading next actions...
+                </div>
+            </div>
+
+            <!-- Memory Summary -->
+            <div class="section full-section">
+                <div class="section-title">Memory Summary</div>
+                <div style="display: flex; gap: 15px;">
+                    <div style="flex: 1;">
+                        <h4 style="color: #ff6600; margin-bottom: 8px;">Today's Log</h4>
+                        <div class="memory-content" id="daily-memory">Loading daily memory...</div>
+                    </div>
+                    <div style="flex: 1;">
+                        <h4 style="color: #ff6600; margin-bottom: 8px;">Long-term Memory</h4>
+                        <div class="memory-content" id="longterm-memory">Loading long-term memory...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="text-align: center; padding: 15px; color: #666; border-top: 1px solid #333;">
+            Digiclaw Comprehensive Status v2.0 • Running on Pi • Real-time Data • Auto-refresh: 15s
+        </footer>
+    </div>
+
+    <script>
+        class ComprehensiveStatus {
+            constructor() {
+                this.updateInterval = 15000; // 15 seconds for real-time feel
+                this.init();
+            }
+
+            async init() {
+                await this.loadComprehensiveStatus();
+                setInterval(() => this.loadComprehensiveStatus(), this.updateInterval);
+                console.log('🔥 Comprehensive Status Dashboard Initialized');
+            }
+
+            async loadComprehensiveStatus() {
+                try {
+                    const response = await fetch('/api/status');
+                    if (response.ok) {
+                        const data = await response.json();
+                        this.updateAllSections(data);
+                        this.updateTimestamp();
+                    }
+                } catch (error) {
+                    console.error('Failed to load status:', error);
+                    this.showError('Failed to load comprehensive status');
+                }
+            }
+
+            updateAllSections(data) {
+                this.updateSystemMetrics(data.system || {});
+                this.updateCurrentActivity(data.current_activity || {});
+                this.updateNodeStatus(data.nodes || {});
+                this.updateCronStatus(data.cron_status || {});
+                this.updateProjects(data.projects || []);
+                this.updateConversations(data.recent_conversations || []);
+                this.updateAutonomousWork(data.autonomous_work || []);
+                this.updateNextActions(data.next_actions || []);
+                this.updateMemorySummary(data.memory_summary || {});
+            }
+
+            updateSystemMetrics(system) {
+                document.getElementById('memory-usage').textContent = system.memory_available || 'Unknown';
+                document.getElementById('storage-usage').textContent = system.disk_free || 'Unknown';
+                document.getElementById('cpu-usage').textContent = system.cpu_usage || 'Unknown';
+                document.getElementById('uptime').textContent = system.uptime || 'Unknown';
+            }
+
+            updateCurrentActivity(activity) {
+                document.getElementById('activity-status-text').textContent = activity.status || 'Unknown';
+                document.getElementById('activity-timestamp').textContent = activity.last_update || '--:--';
+                document.getElementById('process-count').textContent = activity.processes?.length || 0;
+                document.getElementById('dashboard-status').textContent = activity.dashboard_server || 'Unknown';
+            }
+
+            updateNodeStatus(nodes) {
+                document.getElementById('rig-status').textContent = nodes.digized_rig?.status || 'Unknown';
+                document.getElementById('mbp-status').textContent = nodes.digized_mbp?.status || 'Unknown';
+                document.getElementById('iphone-status').textContent = nodes.iphone?.status || 'Unknown';
+            }
+
+            updateCronStatus(cron) {
+                document.getElementById('active-jobs').textContent = `${cron.active_jobs || 0}/${cron.total_jobs || 0}`;
+                document.getElementById('next-daily').textContent = cron.next_daily_update || 'Unknown';
+                document.getElementById('cron-status-text').textContent = cron.status || 'Unknown';
+            }
+
+            updateProjects(projects) {
+                const container = document.getElementById('projects-list');
+                container.innerHTML = projects.map(project => `
+                    <div class="project-card">
+                        <div class="project-name">${project.name || project.title}</div>
+                        <div class="project-status">${project.status} • ${project.files || 0} files • Updated: ${project.last_update}</div>
+                        <div class="progress-container">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress}%"></div>
+                            </div>
+                            <div style="font-size: 11px; color: #888;">${project.progress}% complete</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateConversations(conversations) {
+                const container = document.getElementById('recent-conversations');
+                if (conversations.length === 0) {
+                    container.innerHTML = '<div class="activity-item"><span class="activity-text">No recent conversations</span></div>';
+                    return;
+                }
+                
+                container.innerHTML = conversations.slice(-5).map(conv => `
+                    <div class="activity-item">
+                        <span class="activity-text">${conv}</span>
+                    </div>
+                `).join('');
+            }
+
+            updateAutonomousWork(work) {
+                const container = document.getElementById('autonomous-work');
+                container.innerHTML = work.map(item => `
+                    <div class="autonomous-item">
+                        <span class="autonomous-action">${item.action}</span>
+                        <div>
+                            <span class="autonomous-type">${item.type || 'action'}</span>
+                            <span style="color: #888; margin-left: 8px; font-size: 11px;">${item.time}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateNextActions(actions) {
+                const container = document.getElementById('next-actions');
+                container.innerHTML = actions.map(action => `
+                    <div class="next-action priority-${action.priority}">
+                        <span>${action.action}</span>
+                        <div>
+                            <span style="color: #666; font-size: 11px;">${action.eta}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            updateMemorySummary(memory) {
+                document.getElementById('daily-memory').textContent = memory.daily_log || 'No daily log available';
+                document.getElementById('longterm-memory').textContent = memory.long_term_memory || 'No long-term memory available';
+            }
+
+            updateTimestamp() {
+                const now = new Date();
+                document.getElementById('last-update').textContent = `Last Update: ${now.toLocaleTimeString()}`;
+            }
+
+            showError(message) {
+                document.getElementById('system-status').textContent = 'ERROR';
+                document.getElementById('system-status').className = 'badge error';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.statusDashboard = new ComprehensiveStatus();
+        });
+    </script>
+</body>
+</html>

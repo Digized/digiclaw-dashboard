@@ -1,0 +1,35 @@
+{
+  "subdomain": "digiclaw",
+  "domain": "digized.xyz",
+  "full_domain": "digiclaw.digized.xyz",
+  "public_ip": "174.91.45.149",
+  "local_ip": "192.168.2.22",
+  "dashboard_port": 8081,
+  "last_updated": 1770849670.499492,
+  "setup_instructions": {
+    "namecheap": [
+      "1. Log into Namecheap dashboard",
+      "2. Go to Domain List \u2192 digized.xyz \u2192 Manage",
+      "3. Advanced DNS \u2192 Add new record:",
+      "   - Type: A Record",
+      "   - Host: digiclaw",
+      "   - Value: 174.91.45.149",
+      "   - TTL: 1 min (for testing, later 5 min)",
+      "4. Save changes",
+      "5. Wait 1-5 minutes for propagation",
+      "6. Test: http://digiclaw.digized.xyz:8081/"
+    ],
+    "router_port_forward": [
+      "1. Access router admin (usually 192.168.1.1 or 192.168.2.1)",
+      "2. Find Port Forwarding / NAT settings",
+      "3. Add rule: External port 8081 \u2192 Internal 192.168.2.22:8081",
+      "4. Protocol: TCP",
+      "5. Enable the rule",
+      "6. Save router configuration"
+    ],
+    "alternative_local_access": [
+      "Local network: http://192.168.2.22:8081/",
+      "Comprehensive dashboard: http://192.168.2.22:8081/comprehensive.html"
+    ]
+  }
+}

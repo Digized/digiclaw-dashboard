@@ -15,6 +15,8 @@ from pathlib import Path
 import argparse
 from datetime import datetime
 from urllib.parse import urlparse
+import importlib.util
+import sys
 
 def get_local_ip():
     """Get the local IP address"""
@@ -27,85 +29,28 @@ def get_local_ip():
     except Exception:
         return "localhost"
 
-def get_system_data():
-    """Get real system data from Pi"""
+def get_comprehensive_data():
+    """Get comprehensive status data"""
     try:
-        # Get memory info
-        with open('/proc/meminfo', 'r') as f:
-            meminfo = f.read()
+        # Load the API module
+        spec = importlib.util.spec_from_file_location("api", Path(__file__).parent / "api.py")
+        api_module = importlib.util.module_from_spec(spec)
+        sys.modules["api"] = api_module
+        spec.loader.exec_module(api_module)
         
-        mem_total = 0
-        mem_available = 0
-        for line in meminfo.split('\n'):
-            if line.startswith('MemTotal:'):
-                mem_total = int(line.split()[1])
-            elif line.startswith('MemAvailable:'):
-                mem_available = int(line.split()[1])
-        
-        memory_mb = mem_available // 1024
-        
-        # Get disk usage
-        disk_result = subprocess.run(['df', '-h', '/'], capture_output=True, text=True)
-        disk_lines = disk_result.stdout.split('\n')
-        if len(disk_lines) > 1:
-            disk_parts = disk_lines[1].split()
-            storage_free = disk_parts[3] if len(disk_parts) > 3 else "Unknown"
-        else:
-            storage_free = "Unknown"
-        
-        # Get current time for activity
-        current_time = datetime.now().strftime('%H:%M')
-        
-        return {
-            "memory": f"{memory_mb}MB available",
-            "storage": f"{storage_free} free",
-            "activities": [
-                {
-                    "time": current_time,
-                    "text": "Real system data loaded"
-                },
-                {
-                    "time": "17:26",
-                    "text": "Dashboard updated with real data endpoints"
-                },
-                {
-                    "time": "17:20", 
-                    "text": "GitHub repository created and deployed"
-                },
-                {
-                    "time": "16:40",
-                    "text": "Purged broken cron jobs and stale files"
-                },
-                {
-                    "time": "16:32",
-                    "text": "Dashboard implementation completed"
-                }
-            ],
-            "projects": [
-                {
-                    "title": "Real-time Dashboard",
-                    "status": "Live - Real Data Active",
-                    "progress": 95
-                },
-                {
-                    "title": "Camera Mount",
-                    "status": "Ready for 3D Print",
-                    "progress": 80
-                },
-                {
-                    "title": "System Cleanup",
-                    "status": "Completed",
-                    "progress": 100
-                }
-            ]
-        }
+        return api_module.get_comprehensive_status()
     except Exception as e:
-        print(f"Error getting system data: {e}")
+        print(f"Error loading comprehensive data: {e}")
+        # Fallback to basic data
         return {
-            "memory": "Error reading",
-            "storage": "Error reading", 
-            "activities": [{"time": "ERROR", "text": "Failed to load system data"}],
-            "projects": [{"title": "Error", "status": "System data unavailable", "progress": 0}]
+            "timestamp": datetime.now().isoformat(),
+            "system": {"error": "Failed to load comprehensive data"},
+            "memory_summary": {"error": str(e)},
+            "current_activity": {"status": "Error loading status", "last_update": datetime.now().strftime("%H:%M:%S")},
+            "projects": [{"name": "Dashboard", "status": "Building comprehensive system", "progress": 50}],
+            "recent_conversations": ["Working on comprehensive dashboard"],
+            "autonomous_work": [{"action": "Building status system", "time": datetime.now().strftime("%H:%M")}],
+            "next_actions": [{"action": "Fix comprehensive data loading", "priority": "high"}]
         }
 
 def start_server(port=8080, open_browser=False):
@@ -121,8 +66,8 @@ def start_server(port=8080, open_browser=False):
         def do_GET(self):
             parsed_path = urlparse(self.path)
             
-            # API endpoint for system data
-            if parsed_path.path == '/api/system':
+            # API endpoint for comprehensive status
+            if parsed_path.path == '/api/status':
                 self.send_response(200)
                 self.send_header('Content-type', 'application/json')
                 self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -131,8 +76,29 @@ def start_server(port=8080, open_browser=False):
                 self.send_header('Access-Control-Allow-Origin', '*')
                 self.end_headers()
                 
-                system_data = get_system_data()
-                self.wfile.write(json.dumps(system_data).encode())
+                status_data = get_comprehensive_data()
+                self.wfile.write(json.dumps(status_data).encode())
+                return
+                
+            # Legacy endpoint for backwards compatibility
+            if parsed_path.path == '/api/system':
+                self.send_response(200) 
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
+                self.send_header('Pragma', 'no-cache')
+                self.send_header('Expires', '0')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
+                # Convert comprehensive data to legacy format
+                comprehensive = get_comprehensive_data()
+                legacy_data = {
+                    "memory": comprehensive.get("system", {}).get("memory_available", "Unknown"),
+                    "storage": comprehensive.get("system", {}).get("disk_free", "Unknown"),
+                    "activities": [{"time": datetime.now().strftime("%H:%M"), "text": "Comprehensive status system active"}],
+                    "projects": comprehensive.get("projects", [])
+                }
+                self.wfile.write(json.dumps(legacy_data).encode())
                 return
             
             # Serve static files
